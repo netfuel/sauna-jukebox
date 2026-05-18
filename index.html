@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAUNA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-left">
+      <h1 class="site-title reveal">SAUNA <span class="site-subtitle">Jukebox</span></h1>
+    </div>
+    <div class="header-right">
+      <span class="video-count reveal">283 Videos</span>
+      <button class="shuffle-btn reveal" aria-label="Shuffle videos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 3 21 3 21 8"/>
+          <line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/>
+          <line x1="15" y1="15" x2="21" y2="21"/>
+        </svg>
+      </button>
+      <button class="view-toggle reveal" aria-label="Switch view">
+        <span class="toggle-icon toggle-icon--grid active" id="toggleIcon">&#9638;</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="view view--table active" id="tableView">
+    <div class="table-header">
+      <span class="col col--num">#</span>
+      <span class="col col--title">Title</span>
+      <span class="col col--artist">Artist</span>
+      <span class="col col--play"></span>
+    </div>
+    <div class="table-body" id="tableBody"></div>
+  </section>
+
+  <section class="view view--grid" id="gridView"></section>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
