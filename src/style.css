@@ -40,15 +40,22 @@ body {
 }
 
 .site-title {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-logo {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .site-subtitle {
-  color: var(--text);
+  font-size: 14px;
   font-weight: 300;
+  letter-spacing: 0.25em;
+  color: var(--text);
 }
 
 .header-right {
