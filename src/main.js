@@ -22,6 +22,12 @@ let currentView = 'table';
 let expandedTableRow = null;
 let expandedGridCard = null;
 let lenis = null;
+let playHistory = [];
+
+const miniPrevSVG  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>`;
+const miniPlaySVG  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+const miniPauseSVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+const miniNextSVG  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 6-4.3V16l-6-4z"/><rect x="16" y="6" width="2" height="12"/></svg>`;
 
 const playSVG = `<svg class="play-icon" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>`;
 const playLargeSVG = `<svg class="play-icon-large" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>`;
@@ -170,6 +176,58 @@ function loadYouTubeAPI() {
   });
 }
 
+function updateMiniPlayer(idx) {
+  const v = VIDEOS[idx];
+  document.getElementById('miniThumb').src = `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
+  document.getElementById('miniThumb').alt = v.title;
+  document.getElementById('miniTitle').textContent = v.title;
+  document.getElementById('miniArtist').textContent = v.artist;
+  document.getElementById('miniPlayPause').innerHTML = miniPauseSVG;
+  document.getElementById('miniPlayer').classList.add('is-active');
+  document.body.classList.add('mini-player-open');
+}
+
+function hideMiniPlayer() {
+  document.getElementById('miniPlayer').classList.remove('is-active');
+  document.body.classList.remove('mini-player-open');
+}
+
+function setMiniPlayState(playing) {
+  const btn = document.getElementById('miniPlayPause');
+  if (btn) btn.innerHTML = playing ? miniPauseSVG : miniPlaySVG;
+}
+
+function initMiniPlayer() {
+  document.getElementById('miniPrev').innerHTML = miniPrevSVG;
+  document.getElementById('miniPlayPause').innerHTML = miniPlaySVG;
+  document.getElementById('miniNext').innerHTML = miniNextSVG;
+
+  document.getElementById('miniPrev').addEventListener('click', () => {
+    if (playHistory.length < 2) return;
+    playHistory.pop(); // remove current
+    const prevIdx = playHistory.pop(); // grab previous (expand will re-push it)
+    if (currentView === 'table') {
+      const row = document.querySelector(`.table-row[data-video-index="${prevIdx}"]`);
+      if (row) expandTableRow(row);
+    } else {
+      const card = document.querySelector(`.grid-card[data-video-index="${prevIdx}"]`);
+      if (card) expandGridCard(card);
+    }
+  });
+
+  document.getElementById('miniPlayPause').addEventListener('click', () => {
+    if (!ytPlayer) return;
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+      ytPlayer.pauseVideo();
+    } else {
+      ytPlayer.playVideo();
+    }
+  });
+
+  document.getElementById('miniNext').addEventListener('click', () => playNext());
+}
+
 function createYTPlayer(elementId, videoId) {
   if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
   ytPlayer = new YT.Player(elementId, {
@@ -178,6 +236,8 @@ function createYTPlayer(elementId, videoId) {
     events: {
       onStateChange: ({ data }) => {
         if (data === YT.PlayerState.ENDED) playNext();
+        if (data === YT.PlayerState.PLAYING) setMiniPlayState(true);
+        if (data === YT.PlayerState.PAUSED)  setMiniPlayState(false);
       }
     }
   });
@@ -223,11 +283,13 @@ function expandTableRow(row) {
   const idx = parseInt(row.dataset.videoIndex, 10);
   const v = VIDEOS[idx];
 
-  if (expandedTableRow === row) { collapseTableRow(); return; }
+  if (expandedTableRow === row) { collapseTableRow(); hideMiniPlayer(); playHistory = []; return; }
   if (expandedTableRow) collapseTableRow(true);
 
   row.classList.add('is-active');
   expandedTableRow = row;
+  playHistory.push(idx);
+  updateMiniPlayer(idx);
 
   const playerId = `yt-table-${idx}`;
   const wrapper = document.createElement('div');
@@ -252,6 +314,8 @@ function expandTableRow(row) {
   wrapper.querySelector('.table-row-player__close').addEventListener('click', (e) => {
     e.stopPropagation();
     collapseTableRow();
+    hideMiniPlayer();
+    playHistory = [];
   });
 }
 
@@ -279,11 +343,13 @@ function expandGridCard(card) {
   const idx = parseInt(card.dataset.videoIndex, 10);
   const v = VIDEOS[idx];
 
-  if (expandedGridCard === card) { collapseGridCard(); return; }
+  if (expandedGridCard === card) { collapseGridCard(); hideMiniPlayer(); playHistory = []; return; }
   if (expandedGridCard) collapseGridCard(true);
 
   card.classList.add('grid-card--expanded');
   expandedGridCard = card;
+  playHistory.push(idx);
+  updateMiniPlayer(idx);
 
   const playerId = `yt-grid-${idx}`;
   const playerEl = document.createElement('div');
@@ -311,6 +377,8 @@ function expandGridCard(card) {
   playerEl.querySelector('.grid-card__player-close').addEventListener('click', (e) => {
     e.stopPropagation();
     collapseGridCard();
+    hideMiniPlayer();
+    playHistory = [];
   });
 }
 
@@ -337,6 +405,8 @@ function collapseGridCard(instant) {
 function collapseAll() {
   collapseTableRow(true);
   collapseGridCard(true);
+  hideMiniPlayer();
+  playHistory = [];
 }
 
 function initShuffleButton() {
@@ -389,6 +459,7 @@ async function init() {
   initAnimations();
   initViewToggle();
   initShuffleButton();
+  initMiniPlayer();
   initClickHandlers();
 }
 

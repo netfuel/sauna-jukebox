@@ -62,6 +62,19 @@
 
   <section class="view view--grid" id="gridView"></section>
 
+  <div class="mini-player" id="miniPlayer">
+    <img class="mini-player__thumb" id="miniThumb" src="" alt="">
+    <div class="mini-player__info">
+      <span class="mini-player__title" id="miniTitle"></span>
+      <span class="mini-player__artist" id="miniArtist"></span>
+    </div>
+    <div class="mini-player__controls">
+      <button class="mini-player__btn" id="miniPrev" aria-label="Previous"></button>
+      <button class="mini-player__btn mini-player__btn--playpause" id="miniPlayPause" aria-label="Play / Pause"></button>
+      <button class="mini-player__btn" id="miniNext" aria-label="Next"></button>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

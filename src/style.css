@@ -7,6 +7,7 @@
   --muted: #666;
   --border: #1a1a1a;
   --header-h: 60px;
+  --mini-player-h: 68px;
   --ease-reveal: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -53,9 +54,10 @@ body {
 
 .site-subtitle {
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 700;
   letter-spacing: 0.25em;
-  color: var(--text);
+  color: var(--accent);
+  text-transform: uppercase;
 }
 
 .header-right {
@@ -336,6 +338,78 @@ body {
 }
 .grid-card__player-title { font-size: 15px; }
 .grid-card__player-artist { font-size: 13px; color: var(--muted); }
+
+/* ── MINI PLAYER ── */
+.mini-player {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--mini-player-h);
+  background: #111;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  z-index: 200;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.mini-player.is-active { transform: translateY(0); }
+
+body.mini-player-open { padding-bottom: var(--mini-player-h); }
+
+.mini-player__thumb {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #000;
+}
+
+.mini-player__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.mini-player__title {
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-player__artist {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.mini-player__btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+.mini-player__btn:hover { opacity: 1; }
+.mini-player__btn svg { width: 18px; height: 18px; }
+.mini-player__btn--playpause svg { width: 22px; height: 22px; }
 
 /* ── ANIMATION BASE ── */
 .reveal {
